@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Cart API
-  version: "1.1.0"
+  version: "1.2.0"
   description: RESTFful API for Nutribox Cart Model
 servers:
   - url: https://localhost:8000
@@ -116,20 +116,17 @@ paths:
                   required:
                     - menu_id
                     - quantity
-                - type: array
-                  items:
-                    type: object
-                    properties:
-                      menu_id:
-                        type: integer
-                      name:
-                        type: string
-                      image_src:
-                        type: string
-                      price:
-                        type: number
-                      quantity:
-                        type: integer
+                - type: object
+                  properties:
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          menu_id:
+                            type: integer
+                          quantity:
+                            type: integer
             examples:
               single_item:
                 summary: Add single item
@@ -139,7 +136,7 @@ paths:
               bulk_items:
                 summary: Add multiple item
                 value:
-                  item:
+                  items:
                     - menu_id: 1
                       quantity: 4
                     - menu_id: 2
@@ -161,6 +158,12 @@ paths:
         - Cart
       summary: Update item quantity cart
       description: Update item on current user cart
+      parameters:
+        - name: menu_id
+          in: path
+          schema:
+            type: number
+          required: true
       requestBody:
         content:
           application/json:
@@ -187,6 +190,12 @@ paths:
         - Cart
       summary: Delete item cart
       description: Delete item on current user cart
+      parameters:
+        - name: menu_id
+          in: path
+          schema:
+            type: number
+          required: true
       responses:
         "200":
           description: Cart item deleted successfully

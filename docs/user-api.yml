@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: User API
-  version: "1.1.0"
+  version: "1.2.0"
   description: RESTFful API for Nutribox User Model
 servers:
   - url: https://localhost:8000
@@ -91,7 +91,7 @@ paths:
             schema:
               type: object
               required:
-                - last_name
+                - first_name
                 - email
                 - password
               properties:
@@ -116,10 +116,16 @@ paths:
           $ref: "#/components/responses/BadRequest"
     get:
       summary: Get all user
-      description: Get all user (filter supported)
+      description: Get all user (filter supported) (admin only)
       tags:
-        - User
+        - Admin
       parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
         - name: name
           in: query
           schema:
@@ -251,7 +257,7 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
-    delete:
+    post:
       summary: Logout
       description: Logout current user
       parameters:
@@ -278,17 +284,48 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
   /api/users/{id}:
-    patch:
-      summary: Update User by Id
-      description: Update user by id
+    get:
+      summary: Get User by id
+      description: Get user by id (admin only)
       tags:
-        - User
+        - Admin
       parameters:
         - name: Authorization
           in: header
           schema:
             type: string
             example: "Bearer <token>"
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          description: User fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    patch:
+      summary: Update User by Id
+      description: Update user by id (admin only)
+      tags:
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
           required: true
       requestBody:
         content:
@@ -319,15 +356,20 @@ paths:
           $ref: "#/components/responses/Unauthorized"
     delete:
       summary: Delete User
-      description: Soft delete user account
+      description: Soft delete user account (admin only)
       tags:
-        - User
+        - Admin
       parameters:
         - name: Authorization
           in: header
           schema:
             type: string
             example: Bearer <token>
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
       responses:
         "200":
           description: User soft deleted successfully

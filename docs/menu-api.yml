@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Menu API
-  version: "1.0.0"
+  version: "1.1.0"
   description: RESTFful API for Nutribox Menu Model
 servers:
   - url: https://localhost:8000
@@ -63,10 +63,17 @@ components:
 paths:
   /api/menus:
     post:
-      description: Add new menu
+      description: Add new menu (admin only)
       summary: Add new Menu
       tags:
-        - Menu
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
       requestBody:
         content:
           multipart/form-data:
@@ -198,6 +205,12 @@ paths:
         - Menu
       summary: Get menu
       description: Get menu by id
+      parameters:
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
       responses:
         "200":
           description: Menu fetched successfully
@@ -207,12 +220,24 @@ paths:
                 $ref: "#/components/schemas/MenuResponse"
     patch:
       tags:
-        - Menu
+        - Admin
       summary: Update menu
-      description: Update menu by id
+      description: Update menu by id (admin only)
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
       requestBody:
         content:
-          multipart/form-data::
+          multipart/form-data:
             schema:
               type: object
               properties:
@@ -247,9 +272,21 @@ paths:
           $ref: "#/components/responses/Unauthorized"
     delete:
       tags:
-        - Menu
+        - Admin
       summary: Delete menu
-      description: Delete menu by id
+      description: Delete menu by id (admin only)
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
       responses:
         "200":
           description: Menu deleted successfully

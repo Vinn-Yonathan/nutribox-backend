@@ -63,10 +63,10 @@ components:
 paths:
   /api/users/current/transaction:
     post:
-      summary: Create Transaction
-      description: Create new transaction
+      summary: Create User Transaction
+      description: Create new current user transaction
       tags:
-        - User
+        - Current User
       parameters:
         - name: Authorization
           in: header
@@ -105,10 +105,10 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
     get:
-      summary: Get All Transaction
-      description: Get all transaction
+      summary: Get All User Transaction
+      description: Get all current user transaction
       tags:
-        - User
+        - Current User
       parameters:
         - name: Authorization
           in: header
@@ -154,16 +154,21 @@ paths:
           $ref: "#/components/responses/Unauthorized"
   /api/users/current/transaction/{id}:
     get:
-      summary: Get Transaction
-      description: Get transaction by id
+      summary: Get User Transaction
+      description: Get current user transaction by id
       tags:
-        - User
+        - Current User
       parameters:
         - name: Authorization
           in: header
           schema:
             type: string
             example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
           required: true
       responses:
         "200":
@@ -174,17 +179,222 @@ paths:
                 $ref: "#/components/schemas/TransactionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
-    delete:
-      summary: Delete Transaction
-      description: Delete transaction by id
+    patch:
+      summary: Edit User Transaction Status by id
+      description: Edit current user transaction status by id
       tags:
-        - User
+        - Current User
       parameters:
         - name: Authorization
           in: header
           schema:
             type: string
             example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Transaction status edited successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    delete:
+      summary: Delete Transaction
+      description: Delete transaction by id
+      tags:
+        - Current User
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          description: Transaction deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/transaction:
+    get:
+      summary: Get All Transactions
+      description: Get all transactions (admin only)
+      tags:
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+          required: true
+        - name: user_id
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: min_price
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: max_price
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: include_deleted
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: status
+          in: query
+          schema:
+            type: string
+          required: false
+      responses:
+        "200":
+          description: All transaction fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        user_id:
+                          type: string
+                        menus:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              item_id:
+                                type: string
+                              quantity:
+                                type: integer
+                        status:
+                          type: string
+                        payment_method:
+                          type: string
+                        total_price:
+                          type: number
+                  errors:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/transaction/{id}:
+    get:
+      summary: Get Transaction
+      description: Get transaction by id
+      tags:
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          description: Transaction fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    patch:
+      summary: Edit Transaction Status by id
+      description: Edit transaction status by id (admin only)
+      tags:
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        "200":
+          description: Transaction status edited successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    delete:
+      summary: Delete transaction by id
+      description: Delete transaction by id (admin only)
+      tags:
+        - Admin
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+          required: true
+        - name: id
+          in: path
+          schema:
+            type: number
           required: true
       responses:
         "200":
