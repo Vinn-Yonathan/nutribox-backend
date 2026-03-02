@@ -1,0 +1,344 @@
+openapi: "3.0.3"
+info:
+  title: User API
+  version: "1.1.0"
+  description: RESTFful API for Nutribox User Model
+servers:
+  - url: https://localhost:8000
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+    UserResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: number
+            first_name:
+              type: string
+            last_name:
+              type: string
+            email:
+              type: string
+            address:
+              type: string
+            role:
+              type: string
+        errors:
+          type: object
+    UserResponseToken:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                id:
+                  type: number
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                role:
+                  type: string
+            access_token:
+              type: string
+        errors:
+          type: object
+  responses:
+    BadRequest:
+      description: Bad Request - Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            email:
+              - email must not be blank
+            password:
+              - password must not be blank
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message:
+              - Unauthorized
+paths:
+  /api/users:
+    post:
+      summary: Register User
+      description: Create new user
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - last_name
+                - email
+                - password
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                address:
+                  type: string
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    get:
+      summary: Get all user
+      description: Get all user (filter supported)
+      tags:
+        - User
+      parameters:
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: size
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: number
+          required: false
+      responses:
+        "200":
+          description: Users fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        email:
+                          type: string
+                        address:
+                          type: string
+                        role:
+                          type: string
+                  errors:
+                    type: object
+  /api/users/login:
+    post:
+      summary: Login User
+      description: Create new user login session
+      tags:
+        - User
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseToken"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/users/current:
+    get:
+      summary: Get User
+      description: Get current user
+      tags:
+        - User
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+      responses:
+        "200":
+          description: User fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    patch:
+      summary: Update user
+      description: Update current user
+      tags:
+        - User
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                address:
+                  type: string
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    delete:
+      summary: Logout
+      description: Logout current user
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+      tags:
+        - User
+      responses:
+        "200":
+          description: User logout successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/users/{id}:
+    patch:
+      summary: Update User by Id
+      description: Update user by id
+      tags:
+        - User
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: "Bearer <token>"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                address:
+                  type: string
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    delete:
+      summary: Delete User
+      description: Soft delete user account
+      tags:
+        - User
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+            example: Bearer <token>
+      responses:
+        "200":
+          description: User soft deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"

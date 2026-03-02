@@ -1,0 +1,203 @@
+openapi: "3.0.3"
+info:
+  title: Cart API
+  version: "1.1.0"
+  description: RESTFful API for Nutribox Cart Model
+servers:
+  - url: https://localhost:8000
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+    CartResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            user_id:
+              type: integer
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  menu_id:
+                    type: integer
+                  name:
+                    type: string
+                  image_src:
+                    type: string
+                  price:
+                    type: number
+                  quantity:
+                    type: integer
+            total_price:
+              type: number
+        errors:
+          type: object
+  responses:
+    BadRequest:
+      description: Bad Request - Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              name: [The name field is required]
+              price: [The price must be number]
+    NotFound:
+      description: Data Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              message: [Data not found]
+paths:
+  /api/carts:
+    get:
+      tags:
+        - Cart
+      summary: Get cart
+      description: Get current user cart items
+      responses:
+        "200":
+          description: Cart fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Cart
+      summary: Delete cart
+      description: Delete current user cart
+      responses:
+        "200":
+          description: Cart deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/carts/items:
+    post:
+      tags:
+        - Cart
+      summary: Add item cart
+      description: Create new user cart and/or add item (single or bulk) to the cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  properties:
+                    menu_id:
+                      type: integer
+                    quantity:
+                      type: integer
+                  required:
+                    - menu_id
+                    - quantity
+                - type: array
+                  items:
+                    type: object
+                    properties:
+                      menu_id:
+                        type: integer
+                      name:
+                        type: string
+                      image_src:
+                        type: string
+                      price:
+                        type: number
+                      quantity:
+                        type: integer
+            examples:
+              single_item:
+                summary: Add single item
+                value:
+                  menu_id: 1
+                  quantity: 4
+              bulk_items:
+                summary: Add multiple item
+                value:
+                  item:
+                    - menu_id: 1
+                      quantity: 4
+                    - menu_id: 2
+                      quantity: 1
+                    - menu_id: 4
+                      quantity: 10
+      responses:
+        "201":
+          description: Item added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /api/carts/items/{menu_id}:
+    put:
+      tags:
+        - Cart
+      summary: Update item quantity cart
+      description: Update item on current user cart
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+              required:
+                - quantity
+      responses:
+        "200":
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CartResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Cart
+      summary: Delete item cart
+      description: Delete item on current user cart
+      responses:
+        "200":
+          description: Cart item deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "404":
+          $ref: "#/components/responses/NotFound"

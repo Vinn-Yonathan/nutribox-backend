@@ -1,0 +1,266 @@
+openapi: "3.0.3"
+info:
+  title: Menu API
+  version: "1.0.0"
+  description: RESTFful API for Nutribox Menu Model
+servers:
+  - url: https://localhost:8000
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: object
+    MenuResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: number
+            name:
+              type: string
+            description:
+              type: string
+              default: ""
+            image_src:
+              type: string
+            stock:
+              type: integer
+              default: 0
+            calories:
+              type: number
+            price:
+              type: number
+            is_featured:
+              type: boolean
+              default: false
+        errors:
+          type: object
+  responses:
+    BadRequest:
+      description: Bad Request - Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            name:
+              - name must not be blank
+            price:
+              - price must not be blank
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            message:
+              - Unauthorized
+paths:
+  /api/menus:
+    post:
+      description: Add new menu
+      summary: Add new Menu
+      tags:
+        - Menu
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - calories
+                - price
+                - image
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  default: ""
+                image:
+                  type: string
+                  format: binary
+                stock:
+                  type: integer
+                  default: 0
+                calories:
+                  type: number
+                price:
+                  type: number
+                is_featured:
+                  type: boolean
+                  default: false
+      responses:
+        "201":
+          description: Menu added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    get:
+      tags:
+        - Menu
+      summary: Get all menu
+      description: Get all menu (filter supported)
+      parameters:
+        - name: is_featured
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: name
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: max_price
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: min_price
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: available
+          in: query
+          schema:
+            type: boolean
+          required: false
+        - name: max_calories
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: min_calories
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: page
+          in: query
+          schema:
+            type: number
+          required: false
+        - name: size
+          in: query
+          schema:
+            type: number
+          required: false
+      responses:
+        "200":
+          description: Menu fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        description:
+                          type: string
+                          default: ""
+                        image_src:
+                          type: string
+                        stock:
+                          type: integer
+                          default: 0
+                        calories:
+                          type: number
+                        price:
+                          type: number
+                        is_featured:
+                          type: boolean
+                          default: false
+                  errors:
+                    type: object
+  /api/menus/{id}:
+    get:
+      tags:
+        - Menu
+      summary: Get menu
+      description: Get menu by id
+      responses:
+        "200":
+          description: Menu fetched successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuResponse"
+    patch:
+      tags:
+        - Menu
+      summary: Update menu
+      description: Update menu by id
+      requestBody:
+        content:
+          multipart/form-data::
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  default: ""
+                image:
+                  type: string
+                  format: binary
+                stock:
+                  type: integer
+                  default: 0
+                calories:
+                  type: number
+                price:
+                  type: number
+                is_featured:
+                  type: boolean
+                  default: false
+      responses:
+        "200":
+          description: Menu updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    delete:
+      tags:
+        - Menu
+      summary: Delete menu
+      description: Delete menu by id
+      responses:
+        "200":
+          description: Menu deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  errors:
+                    type: object
+        "401":
+          $ref: "#/components/responses/Unauthorized"
