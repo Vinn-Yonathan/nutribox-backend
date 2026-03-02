@@ -265,7 +265,7 @@ class UserTest extends TestCase
         $user = User::where('last_name', 'Gantenk')->first();
 
         Sanctum::actingAs($user, ['*']);
-        $response = $this->deleteJson('api/users/current');
+        $response = $this->postJson('api/users/current');
 
         $response->assertStatus(200)->assertJson(
             [
@@ -275,7 +275,7 @@ class UserTest extends TestCase
     }
     public function testLogoutCurrentUnauthorized()
     {
-        $response = $this->deleteJson('api/users/current');
+        $response = $this->postJson('api/users/current');
 
         $response->assertStatus(401)->assertJson(
             [
