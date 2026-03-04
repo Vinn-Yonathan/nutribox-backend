@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Transaction API
-  version: "1.0.0"
+  version: "1.0.1"
   description: RESTFful API for Nutribox Transaction Model
 servers:
   - url: https://localhost:8000
@@ -278,6 +278,11 @@ paths:
             type: boolean
           required: false
         - name: status
+          in: query
+          schema:
+            type: string
+          required: false
+        - name: payment_method
           in: query
           schema:
             type: string
