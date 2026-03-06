@@ -31,4 +31,8 @@ class Menu extends Model
     {
         return $this->hasMany(CartItem::class, 'menu_id', "id");
     }
+    public function transactionItem(): HasMany
+    {
+        return $this->hasMany(TransactionItem::class, 'transaction_id', "id");
+    }
 }
