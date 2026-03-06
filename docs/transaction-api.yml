@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Transaction API
-  version: "1.0.2"
+  version: "1.1.0"
   description: RESTFful API for Nutribox Transaction Model
 servers:
   - url: https://localhost:8000
@@ -47,10 +47,11 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            menus:
-              - Menus field is empty
-            quantity:
-              - Menu quantity field is empty
+            errors:
+              menus:
+                - Menus field is empty
+              quantity:
+                - Menu quantity field is empty
     Unauthorized:
       description: Unauthorized
       content:
@@ -58,8 +59,27 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            message:
-              - Unauthorized
+            message: Unauthenticated.
+    NotFound:
+      description: Data not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              message:
+                - Data not found
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              message:
+                - Forbidden
 paths:
   /api/users/current/transaction:
     post:
@@ -109,6 +129,16 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "409":
+          description: Data Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                errors:
+                  message:
+                    - Menu's stock is unavailable
     get:
       summary: Get All User Transaction
       description: Get all current user transaction
@@ -157,6 +187,8 @@ paths:
                     type: object
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/users/current/transaction/{id}:
     get:
       summary: Get User Transaction
@@ -184,6 +216,8 @@ paths:
                 $ref: "#/components/schemas/TransactionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       summary: Edit User Transaction Status by id
       description: Edit current user transaction status by id
@@ -218,6 +252,8 @@ paths:
                 $ref: "#/components/schemas/TransactionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       summary: Delete Transaction
       description: Delete transaction by id
@@ -249,6 +285,8 @@ paths:
                     type: object
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/transaction:
     get:
       summary: Get All Transactions
@@ -328,6 +366,10 @@ paths:
                     type: object
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/transaction/{id}:
     get:
       summary: Get Transaction
@@ -355,6 +397,10 @@ paths:
                 $ref: "#/components/schemas/TransactionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       summary: Edit Transaction Status by id
       description: Edit transaction status by id (admin only)
@@ -389,6 +435,10 @@ paths:
                 $ref: "#/components/schemas/TransactionResponse"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       summary: Delete transaction by id
       description: Delete transaction by id (admin only)
@@ -420,3 +470,7 @@ paths:
                     type: object
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
