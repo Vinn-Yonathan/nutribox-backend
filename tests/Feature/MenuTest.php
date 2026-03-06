@@ -129,7 +129,7 @@ class MenuTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'errors' => [
-                    "message" => ["not found"],
+                    "message" => ["Menu not found"],
                 ]
             ]);
     }
@@ -187,7 +187,7 @@ class MenuTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'errors' => [
-                    "message" => ['not found']
+                    "message" => ['Menu not found']
                 ]
             ]);
     }
@@ -216,7 +216,7 @@ class MenuTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'errors' => [
-                    "message" => ['not found']
+                    "message" => ['Menu not found']
                 ]
             ]);
     }
@@ -230,6 +230,16 @@ class MenuTest extends TestCase
 
         self::assertEquals(10, count($response['data']));
         self::assertEquals(11, $response['meta']['total']);
+    }
+    public function testSearchMenuNotFound(): void
+    {
+        $this->get('/api/menus?name=bento1')
+            ->assertStatus(404)
+            ->assertJson([
+                'errors' => [
+                    "message" => ['Menu not found']
+                ]
+            ]);
     }
     public function testSearchMenuByPage(): void
     {

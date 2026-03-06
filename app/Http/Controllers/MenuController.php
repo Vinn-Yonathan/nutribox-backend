@@ -22,11 +22,11 @@ class MenuController extends Controller
 
     private function handleNotFound($data)
     {
-        if ($data === null) {
+        if ($data === null || ($data instanceof \Illuminate\Pagination\AbstractPaginator && $data->isEmpty())) {
             throw new HttpResponseException(response()->json([
                 'errors' => [
                     'message' => [
-                        'not found'
+                        'Menu not found'
                     ]
                 ]
             ])->setStatusCode(404));
@@ -60,6 +60,7 @@ class MenuController extends Controller
         ]);
 
         $menus = $this->menuService->getList($filter);
+        $this->handleNotFound($menus);
 
         return new MenuCollection($menus);
     }
