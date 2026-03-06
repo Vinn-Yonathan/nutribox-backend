@@ -58,8 +58,27 @@ components:
           schema:
             $ref: "#/components/schemas/ErrorResponse"
           example:
-            message:
-              - Unauthorized
+            message: Unauthenticated.
+    NotFound:
+      description: Data not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              message:
+                - Menu not found
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            errors:
+              message:
+                - Forbidden
 paths:
   /api/menus:
     post:
@@ -114,6 +133,8 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
     get:
       tags:
         - Menu
@@ -199,6 +220,8 @@ paths:
                           default: false
                   errors:
                     type: object
+        "404":
+          $ref: "#/components/responses/NotFound"
   /api/menus/{id}:
     get:
       tags:
@@ -218,6 +241,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/MenuResponse"
+        "404":
+          $ref: "#/components/responses/NotFound"
     patch:
       tags:
         - Admin
@@ -270,6 +295,10 @@ paths:
           $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
     delete:
       tags:
         - Admin
@@ -301,3 +330,7 @@ paths:
                     type: object
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"

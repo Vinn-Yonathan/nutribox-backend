@@ -19,7 +19,6 @@ class TransactionServiceImpl implements TransactionService
     function create(array $transactionData, User $user): Transaction
     {
         return DB::transaction(function () use ($transactionData, $user) {
-            // DB::statement('SET SESSION TRANSACTION ISOLATION LEVEL SERIALIZABLE;');
             $menuIds = array_column($transactionData['menus'], 'menu_id');
             $menus = Menu::whereIn('id', $menuIds)->lockForUpdate()->get();
             foreach ($transactionData['menus'] as $item) {
@@ -50,14 +49,6 @@ class TransactionServiceImpl implements TransactionService
             }, $transactionData['menus']);
 
             TransactionItem::insert($menuData);
-            // $transactionItems = TransactionItem::where('transaction_id', $transaction->id)->get();
-            // if ($transactionItems) {
-            //     $menus->map(function ($menu) use ($transactionItems) {
-            //         $transactionItem = $transactionItems->find($menu->id);
-            //         $menu->lockForUpdate()->decrement('quantity', $transactionItem->quantity);
-            //     });
-            // };
-
             return $transaction;
         });
     }
@@ -99,5 +90,3 @@ class TransactionServiceImpl implements TransactionService
         return $transaction->delete();
     }
 }
-
-// note: ini belum fix, perhatikan responsenya di docs, harus with atau load ini 
