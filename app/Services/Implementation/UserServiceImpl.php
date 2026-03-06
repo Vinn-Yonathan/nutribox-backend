@@ -25,7 +25,7 @@ class UserServiceImpl implements UserService
         if (!$user || !Hash::check($userData['password'], $user->password)) {
             throw new HttpResponseException(response([
                 'errors' => [
-                    'message' => ['email or password wrong']
+                    'message' => ['Email or password wrong']
                 ]
             ], 401));
         }

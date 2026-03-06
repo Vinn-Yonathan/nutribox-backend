@@ -29,7 +29,7 @@ class UserController extends Controller
             throw new HttpResponseException(response()->json([
                 'errors' => [
                     'message' => [
-                        'not found'
+                        'User not found'
                     ]
                 ]
             ])->setStatusCode(404));

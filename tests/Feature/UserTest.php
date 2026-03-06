@@ -127,7 +127,7 @@ class UserTest extends TestCase
         $response->assertStatus(401)->assertJson(
             [
                 'errors' => [
-                    'message' => ['email or password wrong']
+                    'message' => ['Email or password wrong']
                 ]
             ]
         );
@@ -253,7 +253,7 @@ class UserTest extends TestCase
         $response->assertStatus(404)->assertJson(
             [
                 'errors' => [
-                    'message' => ['not found'],
+                    'message' => ['User not found'],
                 ]
             ]
         );
@@ -364,7 +364,7 @@ class UserTest extends TestCase
         $admin = User::where('last_name', 'admin')->first();
 
         $response = $this->actingAs($admin, 'sanctum')->delete('/api/users/' . $user->id + 1000000)->assertStatus(404)->assertJson(
-            ['errors' => ['message' => ['not found']]]
+            ['errors' => ['message' => ['User not found']]]
         );
     }
     public function testDeleteForbidden()
