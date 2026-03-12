@@ -220,7 +220,7 @@ paths:
           $ref: "#/components/responses/NotFound"
     patch:
       summary: Edit User Transaction Status by id
-      description: Edit current user transaction status by id
+      description: Edit current user transaction status to paid
       tags:
         - Current User
       parameters:
@@ -235,14 +235,6 @@ paths:
           schema:
             type: number
           required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                status:
-                  type: string
       responses:
         "200":
           description: Transaction status edited successfully
