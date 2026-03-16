@@ -19,7 +19,9 @@ class MenuQueryBuilder
     {
         if ($isFeatured !== null) {
             $isFeatured = filter_var($isFeatured, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            $this->queryBuilder->where('is_featured', $isFeatured);
+            if ($isFeatured !== null) {
+                $this->queryBuilder->where('is_featured', $isFeatured);
+            }
         }
 
         return $this;
@@ -59,7 +61,7 @@ class MenuQueryBuilder
         }
         return $this;
     }
-    public function filterByAvailability(?bool $available): self
+    public function filterByAvailability($available): self
     {
         if ($available !== null) {
             $available = filter_var($available, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
