@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminOnly;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/carts/items', [CartController::class, 'addItem']);
     Route::put('/carts/items/{menu_id}', [CartController::class, 'updateItem'])->where('menu_id', '[0-9]+');
     Route::delete('/carts/items/{menu_id}', [CartController::class, 'deleteItem'])->where('menu_id', '[0-9]+');
+
+    Route::post('/users/current/transactions', [TransactionController::class, 'add']);
+    Route::get('/users/current/transactions', [TransactionController::class, 'getUserTransactions']);
+    Route::get('/users/current/transactions/{id}', [TransactionController::class, 'getUserTransaction'])->where('id', '[0-9]+');
+    Route::patch('/users/current/transactions/{id}', [TransactionController::class, 'updateUserStatus'])->where('id', '[0-9]+');
+    Route::delete('/users/current/transactions/{id}', [TransactionController::class, 'deleteUserTransaction'])->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:sanctum', AdminOnly::class])->group(function () {
@@ -31,6 +38,10 @@ Route::middleware(['auth:sanctum', AdminOnly::class])->group(function () {
     Route::post('/menus', [MenuController::class, 'add']);
     Route::patch('/menus/{id}', [MenuController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/menus/{id}', [MenuController::class, 'delete'])->where('id', '[0-9]+');
+
+    Route::get('/transactions', [TransactionController::class, 'getTransactions']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'getTransaction'])->where('id', '[0-9]+');
+    Route::delete('/transactions/{id}', [TransactionController::class, 'deleteTransaction'])->where('id', '[0-9]+');
 });
 
 Route::get('/menus/{id}', [MenuController::class, 'getById'])->where('id', '[0-9]+');

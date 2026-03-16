@@ -18,9 +18,6 @@ class MenuTest extends TestCase
 {
 
     use RefreshDatabase;
-    /**
-     * A basic feature test example.
-     */
     public function testAddMenuSuccess(): void
     {
         $this->seed([AdminSeeder::class]);
@@ -80,7 +77,7 @@ class MenuTest extends TestCase
         ]);
 
         $response->assertStatus(403)->assertJson([
-            'errors' => ['message' => 'Forbidden']
+            'errors' => ['message' => ['Forbidden']]
         ]);
     }
     public function testAddMenuFailedUnauthenticated(): void

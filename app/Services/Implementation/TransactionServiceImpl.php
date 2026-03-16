@@ -11,6 +11,7 @@ use App\Services\TransactionService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use function Symfony\Component\Clock\now;
 
@@ -23,7 +24,7 @@ class TransactionServiceImpl implements TransactionService
             $menus = Menu::whereIn('id', $menuIds)->lockForUpdate()->get();
             foreach ($transactionData['menus'] as $item) {
                 //check stock
-                if ($item['quantity'] > $menus->find($item['menu_id'])->quantity) {
+                if ($item['quantity'] > $menus->find($item['menu_id'])->stock) {
                     throw new HttpResponseException(response([
                         'errors' => [
                             'message' => ["Menu's stock is unavailable"]
@@ -44,7 +45,7 @@ class TransactionServiceImpl implements TransactionService
                 $item['created_at'] = now();
 
                 $menu = $menus->find($item['menu_id']);
-                $menu->decrement('quantity', $item['quantity']);
+                $menu->decrement('stock', $item['quantity']);
                 return $item;
             }, $transactionData['menus']);
 
@@ -55,7 +56,7 @@ class TransactionServiceImpl implements TransactionService
 
     function getById(int $transactionId, ?User $user): ?Transaction
     {
-        return $user ? $user->transactions()->with('transactionItems.menus')->find($transactionId) : Transaction::with('transactionItems.menus')->find($transactionId);
+        return $user ? $user->transactions()->with('transactionItems.menu')->find($transactionId) : Transaction::with('transactionItems.menu')->find($transactionId);
     }
 
     function getList(?User $user, array $filter): LengthAwarePaginator
@@ -67,26 +68,40 @@ class TransactionServiceImpl implements TransactionService
             ->filterIncludeDeleted($filter['include_deleted'] ?? null)
             ->filterByStatus($filter['status'] ?? null)
             ->filterByPaymentMethod($filter['payment_method'] ?? null)
-            ->paginate($filter['per_page'] ?? 10, $filter['page'] ?? 1);
+            ->paginate($filter['size'] ?? 10, $filter['page'] ?? 1);
     }
 
-
-    function updateStatus(int $transactionId, ?User $user, string $status): ?Transaction
+    function updateStatus(int $transactionId, User $user): ?Transaction
     {
-        $transaction = $user ? $user->transactions()->with('transactionItems.menus')->find($transactionId) : Transaction::with('transactionItems.menus')->find($transactionId);
+        $transaction = $user->transactions()->with('transactionItems.menu')->find($transactionId);
         if (!$transaction)
             return null;
 
-        $transaction->update(['status' => $status]);
+        $transaction->update(['status' => "paid"]);
         return $transaction->fresh();
     }
 
     function delete(int $transactionId, ?User $user): ?bool
     {
-        $transaction = $user ? $user->transactions()->find($transactionId) : Transaction::find($transactionId);
-        if (!$transaction)
-            return null;
+        return DB::transaction(function () use ($transactionId, $user) {
+            $transaction = $user ? $user->transactions()->where('id', $transactionId)->lockForUpdate()->first() : Transaction::where('id', $transactionId)->lockForUpdate()->first();
+            if (!$transaction) {
+                return null;
+            } else if ($transaction->status === "paid") {
+                throw new HttpResponseException(response([
+                    'errors' => [
+                        'message' => ["Paid transactions cannot be cancelled"]
+                    ]
+                ], 409));
+            }
+            $menuIds = $transaction->transactionItems->pluck('menu_id');
+            $menus = Menu::whereIn('id', $menuIds)->lockForUpdate()->get();
+            foreach ($transaction->transactionItems as $item) {
+                $menu = $menus->find($item['menu_id']);
+                $menu->increment('stock', $item['quantity']);
+            }
 
-        return $transaction->delete();
+            return $transaction->delete();
+        });
     }
 }

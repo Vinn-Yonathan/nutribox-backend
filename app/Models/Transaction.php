@@ -11,6 +11,8 @@ class Transaction extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = ['user_id', 'status', 'payment_method', 'total_price'];
+
     protected $table = "transactions";
     protected $primaryKey = 'id';
     protected $keyType = 'int';
@@ -22,7 +24,8 @@ class Transaction extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function transactionItems(): HasMany{
+    public function transactionItems(): HasMany
+    {
         return $this->hasMany(TransactionItem::class, 'transaction_id', 'id');
     }
 

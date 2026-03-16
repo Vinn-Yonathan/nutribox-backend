@@ -16,9 +16,6 @@ class UserTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * A basic feature test example.
-     */
     public function testRegisterSuccess(): void
     {
         $response = $this->post('api/users', [
@@ -342,7 +339,7 @@ class UserTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'errors' => [
-                    'message' => "Forbidden"
+                    'message' => ["Forbidden"]
                 ]
             ]);
     }
@@ -374,7 +371,7 @@ class UserTest extends TestCase
 
         $response = $this->actingAs($user, 'sanctum')->delete('/api/users/' . $user->id)->assertStatus(403)->assertJson([
             'errors' => [
-                'message' => "Forbidden"
+                'message' => ["Forbidden"]
             ]
         ]);
     }

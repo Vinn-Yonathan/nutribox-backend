@@ -12,7 +12,7 @@ class TransactionQueryBuilder
 
     public function __construct()
     {
-        $this->queryBuilder = Transaction::query()->with('transactionItems.menus');
+        $this->queryBuilder = Transaction::query()->with('transactionItems.menu');
     }
 
     public function filterByUser(?int $userId): self
@@ -25,21 +25,24 @@ class TransactionQueryBuilder
     public function filterByMinPrice(?int $minPrice): self
     {
         if ($minPrice !== null) {
-            $this->queryBuilder->where('price', ">=", $minPrice);
+            $this->queryBuilder->where('total_price', ">=", $minPrice);
         }
         return $this;
     }
     public function filterByMaxPrice(?int $maxPrice): self
     {
         if ($maxPrice !== null) {
-            $this->queryBuilder->where('price', "<=", $maxPrice);
+            $this->queryBuilder->where('total_price', "<=", $maxPrice);
         }
         return $this;
     }
-    public function filterIncludeDeleted(?bool $includeDeleted): self
+    public function filterIncludeDeleted($includeDeleted): self
     {
         if ($includeDeleted !== null) {
-            $includeDeleted ? $this->queryBuilder->whereNotNull('deleted_at') : $this->queryBuilder->whereNull("deleted_at");
+            $includeDeleted = filter_var($includeDeleted, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if ($includeDeleted !== null) {
+                $includeDeleted ? $this->queryBuilder->withTrashed() : $this->queryBuilder->whereNull("deleted_at");
+            }
         }
         return $this;
     }

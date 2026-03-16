@@ -18,7 +18,7 @@ class AdminOnly
         if ($request->user()->role !== 'admin') {
             return response([
                 'errors' => [
-                    'message' => 'Forbidden'
+                    'message' => ['Forbidden']
                 ]
             ], 403);
         }
