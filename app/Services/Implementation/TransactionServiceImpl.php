@@ -11,12 +11,22 @@ use App\Services\TransactionService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Midtrans\Snap;
+use Midtrans\Config;
 use Illuminate\Support\Facades\Log;
 
 use function Symfony\Component\Clock\now;
 
 class TransactionServiceImpl implements TransactionService
 {
+    public function __construct()
+    {
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = false;
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
+
     function create(array $transactionData, User $user): Transaction
     {
         return DB::transaction(function () use ($transactionData, $user) {
@@ -49,6 +59,15 @@ class TransactionServiceImpl implements TransactionService
             }, $transactionData['menus']);
 
             TransactionItem::insert($menuData);
+
+            $transaction->snap_token = Snap::getSnapToken([
+                'transaction_details' => [
+                    'order_id' => $transaction->id,
+                    'gross_amount' => $transaction->total_price,
+                ]
+            ]);
+
+
             return $transaction;
         });
     }

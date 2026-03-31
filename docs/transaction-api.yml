@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Transaction API
-  version: "1.5.0"
+  version: "1.6.0"
   description: RESTFful API for Nutribox Transaction Model
 servers:
   - url: https://localhost:8000
@@ -181,6 +181,8 @@ paths:
                           type: string
                         total_price:
                           type: number
+                        snap_token:
+                          type: string
                   errors:
                     type: object
         "401":
