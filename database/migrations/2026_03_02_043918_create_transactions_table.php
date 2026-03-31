@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("user_id");
-            $table->string('payment_method');
+            $table->string('payment_method')->nullable();
             $table->string('status');
             $table->unsignedInteger('total_price');
             $table->foreign("user_id")->on('users')->references('id')->cascadeOnDelete();

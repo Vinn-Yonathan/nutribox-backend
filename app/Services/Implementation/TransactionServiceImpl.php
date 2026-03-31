@@ -35,7 +35,6 @@ class TransactionServiceImpl implements TransactionService
 
             $transaction = Transaction::create([
                 'user_id' => $user->id,
-                'payment_method' => $transactionData['payment_method'],
                 'status' => 'pending',
                 'total_price' => $transactionData['total_price']
             ]);
@@ -71,13 +70,13 @@ class TransactionServiceImpl implements TransactionService
             ->paginate($filter['size'] ?? 10, $filter['page'] ?? 1);
     }
 
-    function updateStatus(int $transactionId, User $user): ?Transaction
+    function update(array $transactionData, int $transactionId, User $user): ?Transaction
     {
         $transaction = $user->transactions()->with('transactionItems.menu')->find($transactionId);
         if (!$transaction)
             return null;
 
-        $transaction->update(['status' => "paid"]);
+        $transaction->update(['status' => "paid", 'payment_method' => $transactionData['payment_method']]);
         return $transaction->fresh();
     }
 

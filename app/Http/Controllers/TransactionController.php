@@ -88,10 +88,11 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
-    public function updateUserStatus(int $id): TransactionResource
+    public function update(int $id, TransactionUpdateRequest $request): TransactionResource
     {
         $user = Auth::user();
-        $transaction = $this->transactionService->updateStatus($id, $user);
+        $data = $request->validated();
+        $transaction = $this->transactionService->update($data, $id, $user);
         $this->handleNotFound($transaction);
         return new TransactionResource($transaction);
     }

@@ -27,7 +27,6 @@ class TransactionAddRequest extends FormRequest
             'menus' => ['required', 'array', 'min:1'],
             'menus.*.menu_id' => ['required', 'integer'],
             'menus.*.quantity' => ['required', 'integer', 'min:1'],
-            'payment_method' => ['required', 'string'],
             'total_price' => ['required', 'numeric', 'min:1']
         ];
     }

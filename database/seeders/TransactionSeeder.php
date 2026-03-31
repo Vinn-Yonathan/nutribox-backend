@@ -15,19 +15,16 @@ class TransactionSeeder extends Seeder
     {
         Transaction::create([
             'user_id' => 1,
-            "payment_method" => 'credit_card',
             "status" => "pending",
             "total_price" => 10
         ]);
         Transaction::create([
             'user_id' => 2,
-            "payment_method" => 'credit_card',
             "status" => "pending",
             "total_price" => 10
         ]);
         Transaction::create([
             'user_id' => 1,
-            "payment_method" => 'credit_card',
             "status" => "paid",
             "total_price" => 10
         ]);

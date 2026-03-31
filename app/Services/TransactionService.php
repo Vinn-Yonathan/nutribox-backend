@@ -12,6 +12,6 @@ interface TransactionService
     function create(array $transactionData, User $user): Transaction;
     function getById(int $transactionId, ?User $user): ?Transaction;
     function getList(?User $user, array $filter): LengthAwarePaginator|Collection;
-    function updateStatus(int $transactionId, User $user): ?Transaction;
+    function update(array $transactionData, int $transactionId, User $user): ?Transaction;
     function delete(int $transactionId, ?User $user): ?bool;
 }

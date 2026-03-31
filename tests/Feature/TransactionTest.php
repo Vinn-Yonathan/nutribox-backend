@@ -39,7 +39,6 @@ class TransactionTest extends TestCase
 
         $response = $this->actingAs($user)->post('/api/users/current/transactions', [
             'menus' => $cartItems,
-            'payment_method' => 'debit',
             'total_price' => $user->cart->total_price
         ]);
 
@@ -48,7 +47,6 @@ class TransactionTest extends TestCase
                 'user_id' => $user->id,
                 'menus' => $cartItems,
                 'status' => 'pending',
-                'payment_method' => 'debit',
                 'total_price' => $user->cart->total_price
             ]
         ]);
@@ -70,7 +68,6 @@ class TransactionTest extends TestCase
 
         $response = $this->actingAs($user)->post('/api/users/current/transactions', [
             'menus' => $cartItems,
-            'payment_method' => 'debit',
             'total_price' => $user->cart->total_price
         ]);
 
@@ -86,7 +83,6 @@ class TransactionTest extends TestCase
 
         $response = $this->postJson('/api/users/current/transactions', [
             'menus' => ['menu_id' => 1, 'quantity' => 1],
-            'payment_method' => 'debit',
             'total_price' => Menu::first()->price
         ]);
 
@@ -113,7 +109,6 @@ class TransactionTest extends TestCase
 
         $response = $this->actingAs($user)->post('/api/users/current/transactions', [
             'menus' => $cartItems,
-            'payment_method' => 'debit',
             'total_price' => $user->cart->total_price
         ]);
 
@@ -135,7 +130,6 @@ class TransactionTest extends TestCase
                 'user_id' => $user->id,
                 'menus' => [['menu_id' => 1, "quantity" => 1]],
                 'status' => 'pending',
-                'payment_method' => 'credit_card',
                 'total_price' => 10
             ]
         ]);
@@ -200,13 +194,13 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patch("/api/users/current/transactions/" . $user->transactions->first()->id);
+        $response = $this->actingAs($user)->patch("/api/users/current/transactions/" . $user->transactions->first()->id, ['payment_method' => 'debit']);
         $response->assertStatus(200)->assertJson([
             'data' => [
                 'user_id' => $user->id,
                 'menus' => [['menu_id' => 1, "quantity" => 1]],
                 'status' => 'paid',
-                'payment_method' => 'credit_card',
+                'payment_method' => 'debit',
                 'total_price' => 10
             ]
         ]);
@@ -214,7 +208,7 @@ class TransactionTest extends TestCase
     public function testUpdateCurrentUserTransactionFailedUnauthorized()
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
-        $response = $this->patchJson("/api/users/current/transactions/1");
+        $response = $this->patchJson("/api/users/current/transactions/1", ['payment_method' => 'debit']);
         $response->assertStatus(401)->assertJson([
             'message' => 'Unauthenticated.'
         ]);
@@ -223,7 +217,7 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/100000");
+        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/100000", ['payment_method' => 'debit']);
         $response->assertStatus(404)->assertJson([
             'errors' => ['message' => ['Data not found']]
         ]);
@@ -232,7 +226,7 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/2");
+        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/2", ['payment_method' => 'debit']);
         $response->assertStatus(404)->assertJson([
             'errors' => ['message' => ['Data not found']]
         ]);
@@ -290,7 +284,6 @@ class TransactionTest extends TestCase
                 'user_id' => $user->id,
                 'menus' => [['menu_id' => 1, "quantity" => 1]],
                 'status' => 'pending',
-                'payment_method' => 'credit_card',
                 'total_price' => 10
             ]
         ]);
