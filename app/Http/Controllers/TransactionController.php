@@ -88,11 +88,23 @@ class TransactionController extends Controller
         return new TransactionResource($transaction);
     }
 
-    public function update(int $id, TransactionUpdateRequest $request): TransactionResource
+    public function update(TransactionUpdateRequest $request): TransactionResource
     {
-        $user = Auth::user();
         $data = $request->validated();
-        $transaction = $this->transactionService->update($data, $id, $user);
+        $signature = hash(
+            'sha512',
+            $data['order_id'] . $data['status_code'] . (string) $data['gross_amount'] . env('MIDTRANS_SERVER_KEY')
+        );
+
+        if ($signature !== $data['signature_key']) {
+            throw new HttpResponseException(response()->json([
+                'errors' => [
+                    'message' => ['Forbidden']
+                ]
+            ], 403));
+        }
+
+        $transaction = $this->transactionService->update($data);
         $this->handleNotFound($transaction);
         return new TransactionResource($transaction);
     }

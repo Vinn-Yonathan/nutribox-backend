@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Midtrans\Snap;
 use Midtrans\Config;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 use function Symfony\Component\Clock\now;
 
@@ -44,6 +45,7 @@ class TransactionServiceImpl implements TransactionService
             }
 
             $transaction = Transaction::create([
+                'midtrans_id' => Str::uuid(),
                 'user_id' => $user->id,
                 'status' => 'pending',
                 'total_price' => $transactionData['total_price']
@@ -62,7 +64,7 @@ class TransactionServiceImpl implements TransactionService
 
             $transaction->snap_token = Snap::getSnapToken([
                 'transaction_details' => [
-                    'order_id' => $transaction->id,
+                    'order_id' => $transaction->midtrans_id,
                     'gross_amount' => $transaction->total_price,
                 ]
             ]);
@@ -89,13 +91,17 @@ class TransactionServiceImpl implements TransactionService
             ->paginate($filter['size'] ?? 10, $filter['page'] ?? 1);
     }
 
-    function update(array $transactionData, int $transactionId, User $user): ?Transaction
+    function update(array $transactionData): ?Transaction
     {
-        $transaction = $user->transactions()->with('transactionItems.menu')->find($transactionId);
+        $transaction = Transaction::with('transactionItems.menu')->where("midtrans_id", $transactionData['order_id'])->first();
         if (!$transaction)
             return null;
+        if ($transaction->status === 'paid')
+            return $transaction;
 
-        $transaction->update(['status' => "paid", 'payment_method' => $transactionData['payment_method']]);
+        $transactionStatus = $transactionData['transaction_status'] === "settlement" ? "paid" : "pending";
+
+        $transaction->update(['status' => $transactionStatus, 'payment_method' => $transactionData['payment_type']]);
         return $transaction->fresh();
     }
 

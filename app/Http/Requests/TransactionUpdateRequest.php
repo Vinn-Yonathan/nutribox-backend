@@ -24,7 +24,12 @@ class TransactionUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_method' => ['required', 'string']
+            'order_id' => ['required', 'string'],
+            'transaction_status' => ['required'],
+            'payment_type' => ['required', 'string'],
+            'gross_amount' => ['required', 'min:1'],
+            'status_code' => ['required', 'string'],
+            'signature_key' => ['required', 'string'],
         ];
     }
 

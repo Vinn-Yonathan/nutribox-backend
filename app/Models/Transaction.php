@@ -11,7 +11,7 @@ class Transaction extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'status', 'payment_method', 'total_price'];
+    protected $fillable = ['midtrans_id', 'user_id', 'status', 'payment_method', 'total_price'];
 
     protected $table = "transactions";
     protected $primaryKey = 'id';

@@ -25,9 +25,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/current/transactions', [TransactionController::class, 'add']);
     Route::get('/users/current/transactions', [TransactionController::class, 'getUserTransactions']);
     Route::get('/users/current/transactions/{id}', [TransactionController::class, 'getUserTransaction'])->where('id', '[0-9]+');
-    Route::patch('/users/current/transactions/{id}', [TransactionController::class, 'update'])->where('id', '[0-9]+');
     Route::delete('/users/current/transactions/{id}', [TransactionController::class, 'deleteUserTransaction'])->where('id', '[0-9]+');
 });
+
+// Webhook Midtrans
+Route::patch('midtrans/payment/notification', [TransactionController::class, 'update'])->where('id', '[0-9]+');
 
 Route::middleware(['auth:sanctum', AdminOnly::class])->group(function () {
     Route::get('/users', [UserController::class, 'get']);

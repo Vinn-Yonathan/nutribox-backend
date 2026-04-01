@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Transaction;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class TransactionCollectionSeeder extends Seeder
 {
@@ -15,6 +16,7 @@ class TransactionCollectionSeeder extends Seeder
     {
         for ($i = 1; $i <= 5; $i++) {
             Transaction::create([
+                'midtrans_id' => Str::uuid(),
                 'user_id' => 1,
                 "payment_method" => 'credit_card',
                 "status" => "pending",
@@ -23,6 +25,7 @@ class TransactionCollectionSeeder extends Seeder
         }
         for ($i = 1; $i <= 3; $i++) {
             Transaction::create([
+                'midtrans_id' => Str::uuid(),
                 'user_id' => 2,
                 "payment_method" => 'debit',
                 "status" => "paid",
@@ -31,6 +34,7 @@ class TransactionCollectionSeeder extends Seeder
         }
         for ($i = 1; $i <= 2; $i++) {
             Transaction::create([
+                'midtrans_id' => Str::uuid(),
                 'user_id' => 2,
                 "payment_method" => 'gopay',
                 "status" => "pending",
@@ -39,6 +43,7 @@ class TransactionCollectionSeeder extends Seeder
         }
 
         Transaction::create([
+            'midtrans_id' => Str::uuid(),
             'user_id' => 2,
             "payment_method" => 'gopay',
             "status" => "pending",

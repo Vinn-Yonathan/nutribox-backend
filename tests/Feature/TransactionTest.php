@@ -194,7 +194,18 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patch("/api/users/current/transactions/" . $user->transactions->first()->id, ['payment_method' => 'debit']);
+        $response = $this->actingAs($user)->patch("/api/midtrans/payment/notification", [
+            'order_id' => (string) $user->transactions->first()->midtrans_id,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'debit',
+            'gross_amount' => 10,
+            'status_code' => "200",
+            'signature_key' => hash(
+                'sha512',
+                (string) $user->transactions->first()->midtrans_id . "200" . (string) 10 . env('MIDTRANS_SERVER_KEY')
+            )
+        ]);
+
         $response->assertStatus(200)->assertJson([
             'data' => [
                 'user_id' => $user->id,
@@ -205,33 +216,42 @@ class TransactionTest extends TestCase
             ]
         ]);
     }
-    public function testUpdateCurrentUserTransactionFailedUnauthorized()
+    public function testUpdateCurrentUserTransactionFailedForbidden()
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
-        $response = $this->patchJson("/api/users/current/transactions/1", ['payment_method' => 'debit']);
-        $response->assertStatus(401)->assertJson([
-            'message' => 'Unauthenticated.'
+        $transaction = Transaction::first();
+        $response = $this->patchJson("/api/midtrans/payment/notification", [
+            'order_id' => $transaction->midtrans_id,
+            'transaction_status' => 'settlement',
+            'payment_type' => 'debit',
+            'gross_amount' => 10,
+            'status_code' => "200",
+            'signature_key' => "wrongsig"
+        ]);
+        $response->assertStatus(403)->assertJson([
+            'errors' => [
+                'message' => ['Forbidden']
+            ]
         ]);
     }
     public function testUpdateCurrentUserTransactionFailedNotFound()
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/100000", ['payment_method' => 'debit']);
+        $response = $this->actingAs($user)->patchJson("/api/midtrans/payment/notification", [
+            'order_id' => "10000",
+            'transaction_status' => 'settlement',
+            'payment_type' => 'debit',
+            'gross_amount' => 10,
+            'status_code' => "200",
+            'signature_key' => hash(
+                'sha512',
+                "10000" . "200" . (string) 10 . env('MIDTRANS_SERVER_KEY')
+            )
+        ]);
         $response->assertStatus(404)->assertJson([
             'errors' => ['message' => ['Data not found']]
         ]);
-    }
-    public function testUpdateCurrentUserTransactionFailedOtherUser()
-    {
-        $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
-        $user = User::first();
-        $response = $this->actingAs($user)->patchJson("/api/users/current/transactions/2", ['payment_method' => 'debit']);
-        $response->assertStatus(404)->assertJson([
-            'errors' => ['message' => ['Data not found']]
-        ]);
-
-        $this->assertNotEquals($user->id, Transaction::find(2)->user_id);
     }
 
     public function testDeleteCurrentUserTransactionSuccess()

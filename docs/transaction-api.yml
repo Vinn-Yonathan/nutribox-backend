@@ -1,7 +1,7 @@
 openapi: "3.0.3"
 info:
   title: Transaction API
-  version: "1.6.0"
+  version: "2.0.0"
   description: RESTFful API for Nutribox Transaction Model
 servers:
   - url: https://localhost:8000
@@ -218,44 +218,6 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
-    patch:
-      summary: Edit User Transaction Status by id
-      description: Edit current user transaction status to paid
-      tags:
-        - Current User
-      parameters:
-        - name: Authorization
-          in: header
-          schema:
-            type: string
-            example: Bearer <token>
-          required: true
-        - name: id
-          in: path
-          schema:
-            type: number
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - payment_method
-              properties:
-                payment_method:
-                  type: string
-      responses:
-        "200":
-          description: Transaction status edited successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TransactionResponse"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
     delete:
       summary: Delete Transaction
       description: Delete transaction by id
@@ -299,7 +261,44 @@ paths:
                 errors:
                   message:
                     - Paid transactions cannot be cancelled
-  /api/transaction:
+  /api/midtrans/payment/notification:
+    patch:
+      summary: Update Transaction
+      description: Update transaction status & payment method from Midtrans Webhook
+      tags:
+        - Webhook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - payment_method
+              properties:
+                order_id:
+                  type: string
+                transaction_status:
+                  type: string
+                payment_type:
+                  type: string
+                gross_amount:
+                  type: number
+                status_code:
+                  type: string
+                signature_key:
+                  type: string
+      responses:
+        "200":
+          description: Transaction status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TransactionResponse"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/transactions:
     get:
       summary: Get All Transactions
       description: Get all transactions (admin only)
@@ -382,7 +381,7 @@ paths:
           $ref: "#/components/responses/Forbidden"
         "404":
           $ref: "#/components/responses/NotFound"
-  /api/transaction/{id}:
+  /api/transactions/{id}:
     get:
       summary: Get Transaction
       description: Get transaction by id
