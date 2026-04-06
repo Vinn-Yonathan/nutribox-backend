@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/current/transactions', [TransactionController::class, 'getUserTransactions']);
     Route::get('/users/current/transactions/{id}', [TransactionController::class, 'getUserTransaction'])->where('id', '[0-9]+');
     Route::delete('/users/current/transactions/{id}', [TransactionController::class, 'deleteUserTransaction'])->where('id', '[0-9]+');
+    Route::post('/users/current/transactions/{id}/payment-token', [TransactionController::class, 'generateToken'])->where('id', '[0-9]+');
 });
 
 // Webhook Midtrans
