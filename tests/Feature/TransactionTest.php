@@ -194,7 +194,7 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patch("/api/midtrans/payment/notification", [
+        $response = $this->actingAs($user)->post("/api/midtrans/payment/notification", [
             'order_id' => (string) $user->transactions->first()->midtrans_id,
             'transaction_status' => 'settlement',
             'payment_type' => 'debit',
@@ -220,7 +220,7 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $transaction = Transaction::first();
-        $response = $this->patchJson("/api/midtrans/payment/notification", [
+        $response = $this->postJson("/api/midtrans/payment/notification", [
             'order_id' => $transaction->midtrans_id,
             'transaction_status' => 'settlement',
             'payment_type' => 'debit',
@@ -238,7 +238,7 @@ class TransactionTest extends TestCase
     {
         $this->seed([MenuSeeder::class, UserSeeder::class, TransactionSeeder::class, TransactionItemSeeder::class]);
         $user = User::first();
-        $response = $this->actingAs($user)->patchJson("/api/midtrans/payment/notification", [
+        $response = $this->actingAs($user)->postJson("/api/midtrans/payment/notification", [
             'order_id' => "10000",
             'transaction_status' => 'settlement',
             'payment_type' => 'debit',
