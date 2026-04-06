@@ -50,6 +50,17 @@ class TransactionController extends Controller
         return $transactionResource->response()->setStatusCode(201);
     }
 
+    public function generateToken(int $id): JsonResponse
+    {
+        $snapToken = $this->transactionService->generateToken($id);
+        $this->handleNotFound($snapToken);
+        return response()->json([
+            'data' => [
+                'snap_token' => $snapToken
+            ]
+        ], 200);
+    }
+
     public function getUserTransactions(): TransactionCollection
     {
         $user = Auth::user();

@@ -74,6 +74,20 @@ class TransactionServiceImpl implements TransactionService
         });
     }
 
+    function generateToken(int $transactionId): ?string
+    {
+        $transaction = Transaction::find($transactionId);
+        if (!$transaction)
+            return null;
+
+        return Snap::getSnapToken([
+            'transaction_details' => [
+                'order_id' => $transaction->midtrans_id,
+                'gross_amount' => $transaction->total_price,
+            ]
+        ]);
+    }
+
     function getById(int $transactionId, ?User $user): ?Transaction
     {
         return $user ? $user->transactions()->with('transactionItems.menu')->find($transactionId) : Transaction::with('transactionItems.menu')->find($transactionId);

@@ -10,6 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 interface TransactionService
 {
     function create(array $transactionData, User $user): Transaction;
+    function generateToken(int $transactionId): ?string;
     function getById(int $transactionId, ?User $user): ?Transaction;
     function getList(?User $user, array $filter): LengthAwarePaginator|Collection;
     function update(array $transactionData): ?Transaction;

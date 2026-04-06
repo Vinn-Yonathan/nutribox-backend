@@ -26,6 +26,7 @@ class TransactionResource extends JsonResource
             'status' => $this->status,
             'payment_method' => $this->payment_method,
             'total_price' => $this->total_price,
+            'created_at' => $this->created_at,
             'snap_token' => $this->when(isset($this->snap_token), $this->snap_token)
         ];
     }
