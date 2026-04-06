@@ -328,7 +328,7 @@ paths:
                   message:
                     - Paid transactions cannot be cancelled
   /api/midtrans/payment/notification:
-    patch:
+    post:
       summary: Update Transaction
       description: Update transaction status & payment method from Midtrans Webhook
       tags:

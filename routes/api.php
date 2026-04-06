@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Webhook Midtrans
-Route::patch('midtrans/payment/notification', [TransactionController::class, 'update'])->where('id', '[0-9]+');
+Route::post('/midtrans/payment/notification', [TransactionController::class, 'update']);
 
 Route::middleware(['auth:sanctum', AdminOnly::class])->group(function () {
     Route::get('/users', [UserController::class, 'get']);
