@@ -20,7 +20,9 @@ class TransactionResource extends JsonResource
             'menus' => $this->transactionItems->map(function ($item) {
                 return [
                     'menu_id' => $item->menu_id,
-                    'quantity' => $item->quantity
+                    'name' => $item->menu->name,
+                    'quantity' => $item->quantity,
+                    'price' => $item->menu->price,
                 ];
             }),
             'status' => $this->status,

@@ -29,8 +29,12 @@ components:
                 properties:
                   menu_id:
                     type: string
+                  name:
+                    type: string
                   quantity:
                     type: integer
+                  price:
+                    type: number
             status:
               type: string
             payment_method:
@@ -113,9 +117,13 @@ paths:
                     properties:
                       menu_id:
                         type: string
+                      name:
+                        type: string
                       quantity:
                         type: integer
                         minimum: 1
+                      price:
+                        type: number
                 total_price:
                   type: number
       responses:
@@ -140,8 +148,12 @@ paths:
                           properties:
                             menu_id:
                               type: string
+                            name:
+                              type: string
                             quantity:
                               type: integer
+                            price:
+                              type: number
                       status:
                         type: string
                       payment_method:
@@ -204,8 +216,12 @@ paths:
                             properties:
                               menu_id:
                                 type: string
+                              name:
+                                type: string
                               quantity:
                                 type: integer
+                              price:
+                                type: number
                         status:
                           type: string
                         payment_method:
@@ -431,8 +447,12 @@ paths:
                             properties:
                               menu_id:
                                 type: string
+                              name:
+                                type: string
                               quantity:
                                 type: integer
+                              price:
+                                type: number
                         status:
                           type: string
                         payment_method:
