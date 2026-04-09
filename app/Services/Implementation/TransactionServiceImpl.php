@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementation;
 
+use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
@@ -69,6 +70,7 @@ class TransactionServiceImpl implements TransactionService
                 ]
             ]);
 
+            Cart::where('user_id', $user->id)->delete();
 
             return $transaction;
         });
