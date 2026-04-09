@@ -111,15 +111,4 @@ class CartServiceImpl implements CartService
 
         return $status;
     }
-
-    function delete(User $user): bool
-    {
-        $cart = $this->get($user);
-        if (!$cart) {
-            return false;
-        }
-
-        return $cart->delete();
-    }
-
 }

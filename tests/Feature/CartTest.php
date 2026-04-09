@@ -279,34 +279,6 @@ class CartTest extends TestCase
         ]);
     }
 
-    public function testDeleteCartSuccess(): void
-    {
-        $this->seed([MenuSeeder::class, UserSeeder::class, CartSeeder::class, CartItemSeeder::class]);
-        $user = User::where('last_name', 'Gantenk')->first();
-        // Log::info($user->cart->load('cartItems.menu'));
 
-        $response = $this->actingAs($user)->delete('/api/carts');
-
-        $response->assertStatus(200)->assertJson([
-            'data' => true
-        ]);
-
-        $cart = Cart::first();
-        $cartItems = CartItem::first();
-        $this->assertNull($cart);
-        $this->assertNull($cartItems);
-    }
-    public function testDeleteCartNotFound(): void
-    {
-        $this->seed([MenuSeeder::class, UserSeeder::class]);
-        $user = User::where('last_name', 'Gantenk')->first();
-        // Log::info($user->cart->load('cartItems.menu'));
-
-        $response = $this->actingAs($user)->delete('/api/carts');
-
-        $response->assertStatus(404)->assertJson([
-            'errors' => ['message' => ['not found']]
-        ]);
-    }
 
 }

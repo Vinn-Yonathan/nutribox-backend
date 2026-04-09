@@ -17,7 +17,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/current', [UserController::class, 'logout']);
 
     Route::get('/carts', [CartController::class, 'get']);
-    Route::delete('/carts', [CartController::class, 'delete']);
     Route::post('/carts/items', [CartController::class, 'addItem']);
     Route::put('/carts/items/{menu_id}', [CartController::class, 'updateItem'])->where('menu_id', '[0-9]+');
     Route::delete('/carts/items/{menu_id}', [CartController::class, 'deleteItem'])->where('menu_id', '[0-9]+');

@@ -88,22 +88,4 @@ class CartController extends Controller
             'data' => true
         ]);
     }
-    public function delete(): JsonResponse
-    {
-        $user = Auth::user();
-
-        $status = $this->cartService->delete($user);
-        if (!$status) {
-            throw new HttpResponseException(response()->json([
-                'errors' => [
-                    'message' => [
-                        'not found'
-                    ]
-                ]
-            ])->setStatusCode(404));
-        }
-        return response()->json([
-            'data' => true
-        ]);
-    }
 }
