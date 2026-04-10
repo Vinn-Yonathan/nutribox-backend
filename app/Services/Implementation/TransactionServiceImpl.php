@@ -16,6 +16,7 @@ use Midtrans\Snap;
 use Midtrans\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Midtrans\Transaction as MidtransTransaction;
 
 use function Symfony\Component\Clock\now;
 
@@ -82,6 +83,12 @@ class TransactionServiceImpl implements TransactionService
         if (!$transaction)
             return null;
 
+        try {
+            MidtransTransaction::expire($transaction->midtrans_id);
+        } catch (\Exception $e) {
+            Log::warning($e->getMessage());
+        }
+
         return Snap::getSnapToken([
             'transaction_details' => [
                 'order_id' => $transaction->midtrans_id,
@@ -141,6 +148,11 @@ class TransactionServiceImpl implements TransactionService
                 $menu->increment('stock', $item['quantity']);
             }
 
+            try {
+                MidtransTransaction::cancel($transaction->midtrans_id);
+            } catch (\Exception $e) {
+                Log::warning($e->getMessage());
+            }
             return $transaction->delete();
         });
     }
