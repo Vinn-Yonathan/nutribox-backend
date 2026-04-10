@@ -64,7 +64,7 @@ class TransactionQueryBuilder
 
     public function paginate(?int $perPage, ?int $page): LengthAwarePaginator
     {
-        return $this->queryBuilder->orderBy('id', 'asc')->paginate($perPage, page: $page);
+        return $this->queryBuilder->orderBy('id', 'desc')->paginate($perPage, page: $page);
 
     }
 }
