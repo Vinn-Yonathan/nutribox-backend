@@ -1,7 +1,7 @@
 <?php
 return [
     // , 'sanctum/csrf-cookie'
-    'paths' => ['api/*'],
+    'paths' => ['api/*', 'storage/*'],
 
     'allowed_methods' => ['*'],
 
